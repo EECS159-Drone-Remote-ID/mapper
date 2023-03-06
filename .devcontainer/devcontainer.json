@@ -1,5 +1,4 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
   "hostRequirements": {
     "cpus": 4
   },
@@ -9,10 +8,13 @@
   "postAttachCommand": {
     "server": "npm run dev"
   },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "next-app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "customizations": {
     "codespaces": {
       "openFiles": [
-        "pages/index.js"
+        "pages/index.tsx"
       ]
 	},
 	"vscode": {
@@ -26,14 +28,18 @@
     "3000": {
       "label": "Application",
       "onAutoForward": "openPreview"
+    },
+    "8001": {
+      "label": "DynamoDB Admin"
     }
   },
 "forwardPorts": [
-	3000
+	3000, 8001
 ],
 "features": {
-	"ghcr.io/devcontainers-contrib/features/typescript:2": {
-		"version": "latest"
-	}
+  "ghcr.io/devcontainers/features/aws-cli:1": {},
+	"ghcr.io/devcontainers-contrib/features/typescript:2": {},
+	"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+	"ghcr.io/devcontainers/features/node:1": {}
 }
 }

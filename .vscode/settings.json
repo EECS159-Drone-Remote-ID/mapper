@@ -2,8 +2,12 @@
   "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
   "editor.formatOnPaste": false, // required
   "editor.formatOnType": false, // required
-  "editor.formatOnSave": true, // optional
+  "editor.formatOnSave": false, // optional
   "editor.formatOnSaveMode": "file", // required to format on save
+  "editor.codeActionsOnSave": {
+    "source.formatDocuent": true,
+    "source.fixAll.eslint": true
+  },
   "files.autoSave": "onFocusChange", // optional but recommended
   "eslint.enable": true,
   "eslint.probe": [
