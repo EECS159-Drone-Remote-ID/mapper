@@ -1,42 +1,9 @@
 import express from "express";
-import DroneData from ".";
+import { LocationVector, DroneData, BasicId } from "@/models/DroneData";
 
-type RemoteIDPayload = {
-  messageType: "registration" | "heartbeat" | "location" | "status";
-  operatorId: string;
-  droneId: string;
-  droneType: string;
-  maxAltitude: number;
-  maxDistance: number;
-  payloadWeight: number;
-  takeoffWeight: number;
-  speed: number;
-  callSign: string;
-  manufacturer: string;
-  model: string;
-  serialNumber: string;
-  position?: {
-    latitude: number;
-    longitude: number;
-    altitude: number;
-  };
-  heading?: number;
-  timestamp?: string;
-};
-
-type Coordinates = {
-  latitude: number;
-  longitude: number;
-};
-
-type Drone = {
-  id: string;
-  location: Coordinates;
-};
-
-function initializeDrones(): Drone[] {
-  const drones: Drone[] = [];
-  const irvineCoords: Coordinates = {
+function initializeDrones(): DroneData[] {
+  const drones: DroneData[] = [];
+  const irvineCoords: LocationVector = {
     latitude: 33.6846,
     longitude: -117.8265,
   };
@@ -44,12 +11,24 @@ function initializeDrones(): Drone[] {
   const distanceInMeters = distanceInMiles * 1609.34;
 
   for (let i = 1; i <= 3; i++) {
-    const id = `Drone${i}`;
+    const id = i;
     const latitude = irvineCoords.latitude + getRandomOffset(distanceInMeters);
     const longitude =
       irvineCoords.longitude + getRandomOffset(distanceInMeters);
-    const location: Coordinates = { latitude, longitude };
-    drones.push({ id, location });
+    const location: LocationVector = { latitude, longitude };
+    const basicId: BasicId = {
+      idType: 1,
+      uaType: 2,
+      uasId: id.toString(),
+    };
+
+    const drone: DroneData = {
+      basicId: basicId,
+      locationVector: location,
+      lastUpdate: new Date().getUTCDate(),
+    };
+
+    drones.push(drone);
   }
 
   return drones;
@@ -61,17 +40,20 @@ function getRandomOffset(maxDistance: number): number {
   return offset / 111000; // Convert meters to degrees (approximately)
 }
 
-function updateDroneLocations(drones: Drone[]): void {
+function updateDroneLocations(drones: DroneData[]): void {
   setInterval(() => {
     drones.forEach((drone) => {
       const maxDistanceInMeters = 804.672; // Half a mile in meters
       const maxOffsetInDegrees = maxDistanceInMeters / 111000; // Convert meters to degrees (approximately)
       const latitude =
-        drone.location.latitude + getRandomOffset(maxOffsetInDegrees);
+        drone.locationVector.latitude + getRandomOffset(maxOffsetInDegrees);
       const longitude =
-        drone.location.longitude + getRandomOffset(maxOffsetInDegrees);
-      drone.location = { latitude, longitude };
-      console.log(`Drone ${drone.id} location updated:`, drone.location);
+        drone.locationVector.longitude + getRandomOffset(maxOffsetInDegrees);
+      drone.locationVector = { latitude, longitude };
+      console.log(
+        "Drone ${drone.basicId.uasId} location updated:",
+        drone.locationVector
+      );
     });
   }, 1 * 60 * 1000); // 1 minutes in milliseconds
 }
@@ -80,7 +62,7 @@ function updateDroneLocations(drones: Drone[]): void {
 const drones = initializeDrones();
 console.log(
   "Initial drone locations:",
-  drones.map((drone) => drone.location)
+  drones.map((drone) => drone.locationVector)
 );
 updateDroneLocations(drones);
 

@@ -1,11 +1,11 @@
 import { IDType } from "./IDType";
 import { UAType } from "./UAType";
 
-export type DroneData = {
+export default interface DroneData {
   basicId: BasicId;
   locationVector: LocationVector;
   lastUpdate: number;
-};
+}
 
 export interface BasicId {
   idType: IDType;
@@ -15,10 +15,11 @@ export interface BasicId {
 
 export interface LocationVector {
   latitude: number;
-  longitutde: number;
+  longitude: number;
 }
 
 export interface DroneDataDdb extends LocationVector {
   uasId: string;
   lastUpdate: number;
+  latest: number;
 }
